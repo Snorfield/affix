@@ -3,6 +3,12 @@ Affix is a work-in-progress light-weight and fast markov model library for JavaS
 
 # Documentation
 
+For browser usage:
+```js
+import { Model, ModelConstructor } from 'https://cdn.jsdelivr.net/gh/Snorfield/affix@main/src/affix.js'
+```
+For Node.js usage, download the file and import.
+
 It is important to note the difference between the two classes, `Model`, and `ModelConstructor`. `Model` is meant to be a light-weight class with no training methods, it's strictly used to generate an output. `ModelConstructor` is used to actually update and train a model instance. Let's begin by creating a constructor.
 
 ```js

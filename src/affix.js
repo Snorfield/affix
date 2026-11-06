@@ -104,8 +104,8 @@ class Model {
 
     /**
      * Returns a model object built from serialized model JSON
-     * @param {object} json 
-     * @returns {object}
+     * @param {string} json 
+     * @returns {Model}
      */
 
     static deserialize(json) {
@@ -141,26 +141,34 @@ class ModelConstructor extends Model {
     }
 
     /**
+     * 
+     * @param {string} value 
+     * @returns {integer}
+     */
+
+    instantiate(value) {
+        let id = this.lookup.get(value);
+
+        if (id === undefined) {
+            id = this.tokens.length;
+            this.lookup.set(value, id);
+            this.tokens.push(value);
+        }
+
+        return id;
+    }
+
+    /**
      * Builds a connection using the tokens previous and next
      * @param {any} previous 
      * @param {any} next 
      */
 
-    build(previous, next) {
+    connect(previous, next) {
         // Id of context token
-        let context = this.lookup.get(previous);
-        if (context === undefined) {
-            context = this.tokens.length;
-            this.lookup.set(previous, context);
-            this.tokens.push(previous);
-        }
+        const context = this.instantiate(previous);
         // Id of following token
-        let token = this.lookup.get(next);
-        if (token === undefined) {
-            token = this.tokens.length;
-            this.lookup.set(next, token);
-            this.tokens.push(next);
-        }
+        const token = this.instantiate(next);
 
         let connection = this.connections.get(context);
 
@@ -178,14 +186,31 @@ class ModelConstructor extends Model {
      * @param {integer} recall 
      */
 
-    update(array, recall) {
+    build(array, recall) {
         const layer = Math.min(array.length - 1, recall);
         const tokens = array.length - layer;
         if (layer > 0) {
             for (let i = 0; i < tokens; i++) {
                 let context = array.slice(i, i + layer).join('');
                 let token = array[i + layer];
-                this.build(context, token);
+                this.connect(context, token);
+            }
+        }
+    }
+
+    /**
+     * Build model from all context values in the range 1 to max
+     * @param {array} array 
+     * @param {integer} max 
+     * @param {integer} owner 
+     */
+
+    assemble(array, max) {
+        const context = Math.min(array.length - 1, max);
+
+        if (context > 0) {
+            for (let i = 1; i <= max; i++) {
+                this.build(array, i);
             }
         }
     }

@@ -209,7 +209,7 @@ class ModelConstructor extends Model {
         const context = Math.min(array.length - 1, max);
 
         if (context > 0) {
-            for (let i = 1; i <= max; i++) {
+            for (let i = 1; i <= context; i++) {
                 this.build(array, i);
             }
         }
